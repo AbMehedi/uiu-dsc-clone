@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { Admin } from '../models/Admin';
+import { jwtSecret } from '../config';
 
 // Extend Express Request to include user
 export interface AuthRequest extends Request {
@@ -27,8 +28,7 @@ export const authMiddleware = async (
     }
 
     // Verify token
-    const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-    const decoded = jwt.verify(token, JWT_SECRET) as { id: string };
+    const decoded = jwt.verify(token, jwtSecret) as { id: string };
 
     // Get admin from database
     const admin = await Admin.findById(decoded.id).select('-password');

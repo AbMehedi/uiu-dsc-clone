@@ -60,19 +60,19 @@ export function EventCard({ event }: EventCardProps) {
             <span className="line-clamp-1">{event.location}</span>
           </div>
         </div>
-        {event.registrationLink && (
-          <Button className="w-full group/btn" asChild>
-            <a
-              href={event.registrationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2"
-            >
-              Register Now
-              <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-            </a>
-          </Button>
-        )}
+                    {event.registrationLink && (
+                      <Button className="w-full group/btn" asChild>
+                        <a
+                          href={event.registrationLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2"
+                        >
+                          Register Now
+                          <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 transition-all duration-300" />
+                        </a>
+                      </Button>
+                    )}
         <div className="mt-3">
           <span
             className={`inline-block px-2 py-1 rounded text-xs font-medium ${

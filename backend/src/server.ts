@@ -1,20 +1,17 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './config/database';
+import { config } from './config';
 import apiRoutes from './routes';
 import { errorHandler } from './middleware/error.middleware';
 
-// Load environment variables
-dotenv.config();
-
 const app: Application = express();
-const PORT = process.env.PORT || 5000;
+const PORT = config.port;
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: config.frontendUrl,
   credentials: true,
   optionsSuccessStatus: 200,
 };
@@ -54,6 +51,7 @@ app.use(errorHandler);
 // Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on http://localhost:${PORT}`);
-  console.log(`📡 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📡 Environment: ${config.nodeEnv}`);
+  console.log(`🔗 Frontend URL: ${config.frontendUrl}`);
 });
 

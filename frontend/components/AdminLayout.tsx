@@ -56,7 +56,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <aside
         className={`
           fixed md:static inset-y-0 left-0 z-50
-          w-64 bg-white border-r border-gray-200
+          w-64 bg-white/95 backdrop-blur-lg border-r border-gray-200 shadow-lg md:shadow-none
           transform transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}

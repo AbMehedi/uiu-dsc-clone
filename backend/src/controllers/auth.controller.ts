@@ -1,12 +1,11 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { Admin } from '../models/Admin';
+import { jwtSecret, jwtExpire } from '../config';
 
 // Generate JWT token
 const generateToken = (id: string): string => {
-  const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-  const JWT_EXPIRE = process.env.JWT_EXPIRE || '7d';
-  return jwt.sign({ id }, JWT_SECRET, { expiresIn: JWT_EXPIRE });
+  return jwt.sign({ id }, jwtSecret, { expiresIn: jwtExpire });
 };
 
 // Admin login

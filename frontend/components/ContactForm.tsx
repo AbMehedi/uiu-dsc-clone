@@ -74,7 +74,7 @@ export function ContactForm({ className }: ContactFormProps) {
   };
 
   return (
-    <Card className={className}>
+    <Card className={`glass-card ${className}`}>
       <CardHeader>
         <CardTitle>Contact Us</CardTitle>
         <CardDescription>
