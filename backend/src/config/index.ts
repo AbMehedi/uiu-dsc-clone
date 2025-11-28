@@ -3,11 +3,14 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+// Valid JWT expiration time format (number of seconds or a string with time unit)
+type JwtExpire = number | `${number}${'s' | 'm' | 'h' | 'd' | 'w' | 'y'}`;
+
 interface Config {
   port: number;
   mongodbUri: string;
   jwtSecret: string;
-  jwtExpire: string;
+  jwtExpire: number | string;  // Can be number (seconds) or string (e.g., '7d')
   frontendUrl: string;
   nodeEnv: string;
 }
@@ -40,11 +43,26 @@ const validateEnv = (): Config => {
     );
   }
 
+  // Parse JWT expire time
+  let jwtExpire: JwtExpire = '7d'; // default
+  if (process.env.JWT_EXPIRE) {
+    // If it's a number, parse it
+    if (/^\d+$/.test(process.env.JWT_EXPIRE)) {
+      jwtExpire = parseInt(process.env.JWT_EXPIRE, 10);
+    } 
+    // If it's a valid time string (e.g., '1h', '30m', '7d')
+    else if (/^\d+[smhdwy]$/.test(process.env.JWT_EXPIRE)) {
+      jwtExpire = process.env.JWT_EXPIRE as JwtExpire;
+    } else {
+      console.warn(`Invalid JWT_EXPIRE format: ${process.env.JWT_EXPIRE}. Using default '7d'`);
+    }
+  }
+
   return {
     port: parseInt(process.env.PORT!, 10),
     mongodbUri: process.env.MONGODB_URI!,
     jwtSecret: process.env.JWT_SECRET!,
-    jwtExpire: process.env.JWT_EXPIRE || '7d',
+    jwtExpire,
     frontendUrl: process.env.FRONTEND_URL!,
     nodeEnv: process.env.NODE_ENV || 'development',
   };

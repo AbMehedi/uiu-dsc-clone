@@ -1,11 +1,36 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import { sign, SignOptions, Secret } from 'jsonwebtoken';
 import { Admin } from '../models/Admin';
 import { jwtSecret, jwtExpire } from '../config';
 
+// JWT payload type
+interface JwtPayload {
+  id: string;
+  iat?: number;
+  exp?: number;
+}
+
 // Generate JWT token
 const generateToken = (id: string): string => {
-  return jwt.sign({ id }, jwtSecret, { expiresIn: jwtExpire });
+  if (!jwtSecret) {
+    throw new Error('JWT_SECRET is not defined');
+  }
+
+  const payload: JwtPayload = { id };
+  
+  const options: SignOptions = {
+    algorithm: 'HS256',
+  };
+
+  if (typeof jwtExpire === 'number' || typeof jwtExpire === 'string') {
+    options.expiresIn = jwtExpire as SignOptions['expiresIn'];
+  }
+  
+  return sign(
+    payload,
+    jwtSecret as Secret,
+    options
+  );
 };
 
 // Admin login

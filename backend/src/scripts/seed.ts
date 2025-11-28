@@ -22,19 +22,21 @@ const seedDatabase = async () => {
     // console.log('🗑️  Cleared existing data\n');
 
     // 1. Create default admin user
-    console.log('👤 Creating admin user...');
-    const existingAdmin = await Admin.findOne({ email: 'admin@uiudsc.ac.bd' });
-    
-    if (existingAdmin) {
-      console.log('⚠️  Admin user already exists, skipping...\n');
-    } else {
-      const admin = await Admin.create({
-        email: 'admin@uiudsc.ac.bd',
-        password: 'admin123', // Will be hashed automatically
-        name: 'Admin User',
+    console.log('👤 Creating default admin user...');
+    const adminEmail = 'admin@uiudsc.ac.bd';
+    const adminPassword = 'admin123';
+    let admin = await Admin.findOne({ email: adminEmail });
+    if (!admin) {
+      // Admin.create will automatically hash the password via pre-save hook
+      admin = await Admin.create({
+        email: adminEmail,
+        password: adminPassword,
+        name: 'Admin',
         role: 'admin',
       });
-      console.log(`✅ Admin user created: ${admin.email}\n`);
+      console.log('✅ Admin created:', admin.email);
+    } else {
+      console.log('⚠️  Admin already exists:', admin.email);
     }
 
     // 2. Create sample events

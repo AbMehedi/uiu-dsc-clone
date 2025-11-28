@@ -51,6 +51,11 @@ export function Navbar() {
               Contact
             </Link>
             <Button variant="outline" size="sm" asChild>
+              <Link href="/admin/login" className="bg-blue-50 hover:bg-blue-100 text-blue-700">
+                Admin Login
+              </Link>
+            </Button>
+            <Button variant="outline" size="sm" asChild>
               <Link href="/admin">Admin</Link>
             </Button>
           </div>

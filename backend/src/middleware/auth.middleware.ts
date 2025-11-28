@@ -1,7 +1,40 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { verify, JwtPayload, JsonWebTokenError } from 'jsonwebtoken';
 import { Admin } from '../models/Admin';
 import { jwtSecret } from '../config';
+
+// Extend JwtPayload to include our custom fields
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+}
+
+// Extend Express Request to include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        name: string;
+        role: string;
+      };
+    }
+  }
+}
+
+// Extend Express Request to include user
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        name: string;
+        role: string;
+      };
+    }
+  }
+}
 
 // Extend Express Request to include user
 export interface AuthRequest extends Request {
@@ -27,14 +60,22 @@ export const authMiddleware = async (
       return;
     }
 
-    // Verify token
-    const decoded = jwt.verify(token, jwtSecret) as { id: string };
+    if (!jwtSecret) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+
+    // Verify token with proper type assertion
+    const decoded = verify(token, jwtSecret) as CustomJwtPayload;
+
+    if (!decoded.id) {
+      throw new Error('Invalid token payload');
+    }
 
     // Get admin from database
     const admin = await Admin.findById(decoded.id).select('-password');
 
     if (!admin) {
-      res.status(401).json({ error: 'Invalid token' });
+      res.status(401).json({ error: 'User not found' });
       return;
     }
 
@@ -48,11 +89,15 @@ export const authMiddleware = async (
 
     next();
   } catch (error) {
-    if (error instanceof jwt.JsonWebTokenError) {
-      res.status(401).json({ error: 'Invalid token' });
+    if (error instanceof JsonWebTokenError) {
+      if (error.name === 'TokenExpiredError') {
+        res.status(401).json({ error: 'Token expired' });
+      } else {
+        res.status(401).json({ error: 'Invalid token' });
+      }
       return;
     }
-    res.status(500).json({ error: 'Authentication failed' });
+    console.error('Auth middleware error:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
-
